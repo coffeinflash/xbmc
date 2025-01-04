@@ -702,7 +702,7 @@ bool CApplication::Initialize()
     CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_SPLASH);
 
     if (settings->GetBool(CSettings::SETTING_MASTERLOCK_STARTUPLOCK) &&
-        profileManager->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+        profileManager->GetMasterProfile().getLockMode() != LockMode::EVERYONE &&
         !profileManager->GetMasterProfile().getLockCode().empty())
     {
       g_passwordManager.CheckStartUpLock();
@@ -1479,6 +1479,14 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     *static_cast<bool*>(pMsg->lpVoid) = CServiceBroker::GetWinSystem()->DestroyWindow();
     GetComponent<CApplicationPowerHandling>()->SetRenderGUI(false);
     break;
+
+  case TMSG_RESUMEAPP:
+  {
+    CGUIComponent* gui = CServiceBroker::GetGUI();
+    if (gui)
+      gui->GetWindowManager().MarkDirty();
+    break;
+  }
 #endif
 
   case TMSG_START_ANDROID_ACTIVITY:
@@ -3056,7 +3064,7 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr,
   {
     if (!CBuiltins::GetInstance().IsSystemPowerdownCommand(actionStr) ||
         CServiceBroker::GetPVRManager().Get<PVR::GUI::PowerManagement>().CanSystemPowerdown())
-      CBuiltins::GetInstance().Execute(actionStr);
+      CBuiltins::GetInstance().Execute(actionStr, item);
   }
   else
   {

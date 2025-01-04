@@ -289,17 +289,18 @@ bool CFile::Open(const CURL& file, const unsigned int flags)
       {
         const auto settings = CServiceBroker::GetSettingsComponent()->GetSettings();
 
-        const int cacheBufferMode = (settings)
-                                        ? settings->GetInt(CSettings::SETTING_FILECACHE_BUFFERMODE)
-                                        : CACHE_BUFFER_MODE_NETWORK;
+        const CacheBufferMode cacheBufferMode =
+            (settings) ? static_cast<CacheBufferMode>(
+                             settings->GetInt(CSettings::SETTING_FILECACHE_BUFFERMODE))
+                       : CacheBufferMode::NETWORK;
 
-        if ((cacheBufferMode == CACHE_BUFFER_MODE_INTERNET &&
+        if ((cacheBufferMode == CacheBufferMode::INTERNET &&
              URIUtils::IsInternetStream(pathToUrl, true)) ||
-            (cacheBufferMode == CACHE_BUFFER_MODE_TRUE_INTERNET &&
+            (cacheBufferMode == CacheBufferMode::TRUE_INTERNET &&
              URIUtils::IsInternetStream(pathToUrl, false)) ||
-            (cacheBufferMode == CACHE_BUFFER_MODE_NETWORK &&
+            (cacheBufferMode == CacheBufferMode::NETWORK &&
              URIUtils::IsNetworkFilesystem(pathToUrl)) ||
-            (cacheBufferMode == CACHE_BUFFER_MODE_ALL &&
+            (cacheBufferMode == CacheBufferMode::ALL &&
              (URIUtils::IsNetworkFilesystem(pathToUrl) || URIUtils::IsHD(pathToUrl))))
         {
           m_flags |= READ_CACHED;
@@ -983,14 +984,14 @@ bool CFile::SetHidden(const CURL& file, bool hidden)
   return false;
 }
 
-int CFile::IoControl(EIoControl request, void* param)
+int CFile::IoControl(IOControl request, void* param)
 {
   int result = -1;
   if (!m_pFile)
     return -1;
   result = m_pFile->IoControl(request, param);
 
-  if(result == -1 && request == IOCTRL_SEEK_POSSIBLE)
+  if (result == -1 && request == IOControl::SEEK_POSSIBLE)
   {
     if(m_pFile->GetLength() >= 0 && m_pFile->Seek(0, SEEK_CUR) >= 0)
       return 1;

@@ -395,11 +395,13 @@ JSONRPC_STATUS CPlayerOperations::SetAudioDelay(const std::string& method,
       const auto appPlayer = components.GetComponent<CApplicationPlayer>();
       float videoAudioDelayRange =
           CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange;
+      float videoAudioDelayStep =
+          CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayStep;
 
       if (parameterObject["offset"].isDouble())
       {
         float offset = static_cast<float>(parameterObject["offset"].asDouble());
-        offset = MathUtils::RoundF(offset, AUDIO_DELAY_STEP);
+        offset = MathUtils::RoundF(offset, videoAudioDelayStep);
         if (offset > videoAudioDelayRange)
           offset = videoAudioDelayRange;
         else if (offset < -videoAudioDelayRange)
@@ -412,14 +414,14 @@ JSONRPC_STATUS CPlayerOperations::SetAudioDelay(const std::string& method,
         CVideoSettings vs = appPlayer->GetVideoSettings();
         if (parameterObject["offset"].asString().compare("increment") == 0)
         {
-          vs.m_AudioDelay += AUDIO_DELAY_STEP;
+          vs.m_AudioDelay += videoAudioDelayStep;
           if (vs.m_AudioDelay > videoAudioDelayRange)
             vs.m_AudioDelay = videoAudioDelayRange;
           appPlayer->SetAVDelay(vs.m_AudioDelay);
         }
         else
         {
-          vs.m_AudioDelay -= AUDIO_DELAY_STEP;
+          vs.m_AudioDelay -= videoAudioDelayStep;
           if (vs.m_AudioDelay < -videoAudioDelayRange)
             vs.m_AudioDelay = -videoAudioDelayRange;
           appPlayer->SetAVDelay(vs.m_AudioDelay);
@@ -1232,16 +1234,16 @@ JSONRPC_STATUS CPlayerOperations::SetPartymode(const std::string &method, ITrans
         return FailedToExecute;
 
       bool change = false;
-      PartyModeContext context = PARTYMODECONTEXT_UNKNOWN;
+      PartyModeContext context = PartyModeContext::UNKNOWN;
       std::string strContext;
       if (player == Video)
       {
-        context = PARTYMODECONTEXT_VIDEO;
+        context = PartyModeContext::VIDEO;
         strContext = "video";
       }
       else if (player == Audio)
       {
-        context = PARTYMODECONTEXT_MUSIC;
+        context = PartyModeContext::MUSIC;
         strContext = "music";
       }
 

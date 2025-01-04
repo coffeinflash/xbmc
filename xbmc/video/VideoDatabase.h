@@ -707,7 +707,9 @@ public:
   void AddBookMarkToFile(const std::string& strFilenameAndPath, const CBookmark &bookmark, CBookmark::EType type = CBookmark::STANDARD);
   bool GetResumeBookMark(const std::string& strFilenameAndPath, CBookmark &bookmark);
   void DeleteResumeBookMark(const CFileItem& item);
-  void ClearBookMarkOfFile(const std::string& strFilenameAndPath, CBookmark& bookmark, CBookmark::EType type = CBookmark::STANDARD);
+  void ClearBookMarkOfFile(const std::string& strFilenameAndPath,
+                           const CBookmark& bookmark,
+                           CBookmark::EType type = CBookmark::STANDARD);
   void ClearBookMarksOfFile(const std::string& strFilenameAndPath, CBookmark::EType type = CBookmark::STANDARD);
   void ClearBookMarksOfFile(int idFile, CBookmark::EType type = CBookmark::STANDARD);
   bool GetBookMarkForEpisode(const CVideoInfoTag& tag, CBookmark& bookmark);
@@ -721,12 +723,15 @@ public:
   CVideoInfoTag GetDetailsByTypeAndId(VideoDbContentType type, int id);
 
   // scraper settings
+  using ScraperCache = std::unordered_map<std::string, ADDON::ScraperPtr>;
   void SetScraperForPath(const std::string& filePath,
                          const ADDON::ScraperPtr& info,
                          const KODI::VIDEO::SScanSettings& settings);
-  ADDON::ScraperPtr GetScraperForPath(const std::string& strPath);
   ADDON::ScraperPtr GetScraperForPath(const std::string& strPath,
-                                      KODI::VIDEO::SScanSettings& settings);
+                                      ScraperCache* scraperCache = nullptr);
+  ADDON::ScraperPtr GetScraperForPath(const std::string& strPath,
+                                      KODI::VIDEO::SScanSettings& settings,
+                                      ScraperCache* scraperCache = nullptr);
 
   /*! \brief Retrieve the scraper and settings we should use for the specified path
    If the scraper is not set on this particular path, we'll recursively check parent folders.
@@ -738,7 +743,8 @@ public:
    */
   ADDON::ScraperPtr GetScraperForPath(const std::string& strPath,
                                       KODI::VIDEO::SScanSettings& settings,
-                                      bool& foundDirectly);
+                                      bool& foundDirectly,
+                                      ScraperCache* scraperCache = nullptr);
 
   /*! \brief Retrieve the content type of videos in the given path
    If content is set on the folder, we return the given content type, except in the case of tvshows,
@@ -939,7 +945,11 @@ public:
   void UpdateFileDateAdded(CVideoInfoTag& details);
 
   void ExportToXML(const std::string &path, bool singleFile = true, bool images=false, bool actorThumbs=false, bool overwrite=false);
-  void ExportActorThumbs(const std::string &path, const CVideoInfoTag& tag, bool singleFiles, bool overwrite=false);
+  void ExportActorThumbs(const std::string& path,
+                         const CVideoInfoTag& tag,
+                         bool singleFiles,
+                         bool overwrite = false,
+                         const std::string& tvshowDir = "") const;
   void ImportFromXML(const std::string &path);
   void DumpToDummyFiles(const std::string &path);
   bool ImportArtFromXML(const TiXmlNode *node, std::map<std::string, std::string> &artwork);

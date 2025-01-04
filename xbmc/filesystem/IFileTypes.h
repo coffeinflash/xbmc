@@ -57,23 +57,24 @@ struct SCacheStatus
   uint32_t lowrate; /**< low speed read rate (bytes/second) (if any, else 0) */
 };
 
-enum CACHE_BUFFER_MODES
+enum class CacheBufferMode
 {
-  CACHE_BUFFER_MODE_INTERNET = 0,
-  CACHE_BUFFER_MODE_ALL = 1,
-  CACHE_BUFFER_MODE_TRUE_INTERNET = 2,
-  CACHE_BUFFER_MODE_NONE = 3,
-  CACHE_BUFFER_MODE_NETWORK = 4,
+  INTERNET = 0,
+  ALL = 1,
+  TRUE_INTERNET = 2,
+  NONE = 3,
+  NETWORK = 4,
 };
 
-typedef enum {
-  IOCTRL_NATIVE        = 1,  /**< SNativeIoControl structure, containing what should be passed to native ioctrl */
-  IOCTRL_SEEK_POSSIBLE = 2,  /**< return 0 if known not to work, 1 if it should work */
-  IOCTRL_CACHE_STATUS  = 3,  /**< SCacheStatus structure */
-  IOCTRL_CACHE_SETRATE = 4,  /**< unsigned int with speed limit for caching in bytes per second */
-  IOCTRL_SET_CACHE     = 8,  /**< CFileCache */
-  IOCTRL_SET_RETRY     = 16, /**< Enable/disable retry within the protocol handler (if supported) */
-} EIoControl;
+enum class IOControl
+{
+  NATIVE = 1, /**< SNativeIoControl structure, containing what should be passed to native ioctrl */
+  SEEK_POSSIBLE = 2, /**< return 0 if known not to work, 1 if it should work */
+  CACHE_STATUS = 3, /**< SCacheStatus structure */
+  CACHE_SETRATE = 4, /**< unsigned int with speed limit for caching in bytes per second */
+  SET_CACHE = 8, /**< CFileCache */
+  SET_RETRY = 16, /**< Enable/disable retry within the protocol handler (if supported) */
+};
 
 enum CURLOPTIONTYPE
 {
@@ -101,14 +102,14 @@ enum CURLOPTIONTYPE
  * sslcipherlist: Set list of accepted SSL ciphers.
  */
 
-enum FileProperty
+enum class FileProperty
 {
-  FILE_PROPERTY_RESPONSE_PROTOCOL,          /**< Get response protocol line  */
-  FILE_PROPERTY_RESPONSE_HEADER,            /**< Get response Header value  */
-  FILE_PROPERTY_CONTENT_TYPE,               /**< Get file content-type  */
-  FILE_PROPERTY_CONTENT_CHARSET,            /**< Get file content charset  */
-  FILE_PROPERTY_MIME_TYPE,                  /**< Get file mime type  */
-  FILE_PROPERTY_EFFECTIVE_URL               /**< Get effective URL for redirected streams  */
+  RESPONSE_PROTOCOL, /**< Get response protocol line  */
+  RESPONSE_HEADER, /**< Get response Header value  */
+  CONTENT_TYPE, /**< Get file content-type  */
+  CONTENT_CHARSET, /**< Get file content charset  */
+  MIME_TYPE, /**< Get file mime type  */
+  EFFECTIVE_URL /**< Get effective URL for redirected streams  */
 };
 
 class IFileCallback
